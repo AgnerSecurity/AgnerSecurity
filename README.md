@@ -1,7 +1,13 @@
-# Agner Security - Uma ferramenta de Luis Carlos Agner Claro para segurança de redes de computadores
+# Agner Security - Uma ferramenta de Luis Carlos Agner Claro para segurança de redes de computadores (NOVA VERSÃO 2.0 DISPONÍVEL)
 Uma ferramenta WEB de segurança open source de redes de computadores com Nmap, honeypot, vulnerabilidade de equipamentos de rede etc, A ferramenta AGNER SECURITY serve para escanear automaticamente o bloco IP de portas abertas e vulnerabilidades, juntando uma dashboard WEB amigável para visualização de dados.
 
-![](https://i.imgur.com/RlxWJpo.png)
+![](https://i.imgur.com/cpjIxhl.png)
+
+![](https://i.imgur.com/NQVN1Yj.png)
+
+![](https://i.imgur.com/NSsf4Fd.png)
+
+![](https://i.imgur.com/wiidNL3.png)
 
 A ferramenta Agner Security foi desenvolvida para ajudar administradores de redes de computadores a cuidar da segurança e da integridade da mesma,
 sendo uma ferramenta totalmente open source, ou seja gratuita.
