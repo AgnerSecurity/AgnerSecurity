@@ -1,0 +1,3 @@
+[submodule "src/nmap/mikrotik/WinboxExploit"]
+	path = src/nmap/mikrotik/WinboxExploit
+	url = https://github.com/BigNerd95/WinboxExploit.git

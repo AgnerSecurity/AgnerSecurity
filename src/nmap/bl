@@ -1,0 +1,133 @@
+#!/usr/bin/env bash
+
+
+main() {
+
+  [ $# -ne 1 ] && error "especifique o bloco"
+
+  fqdn=$(echo $1 | grep -P "(?=^.{5,254}$)(^(?:(?!\d+\.)[a-za-z0-9_\-]{1,63}\.?)+(?:[a-za-z]{2,})$)")
+
+  if [[ $fqdn ]] ; then
+
+    echo "You entered a domain: $1"
+
+    domain=$(host $1 | head -n1 | awk '{print $4}')
+
+    reverseit $domain "IP nao valido"
+  else
+
+    echo "You entered an IP: $1"
+    reverseit $1 "IP not valid."
+  fi
+
+  loopthroughblacklists $1
+}
+
+#### reverseit ####
+reverseit() {
+
+  reverse=$(echo $1 |
+  sed -ne "s~^\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)$~\4.\3.\2.\1~p")
+
+  if [ "x${reverse}" = "x" ] ; then
+
+    error $2 
+    exit 1
+  fi
+}
+
+#### loopthroughblacklists ####
+loopthroughblacklists() {
+
+  reverse_dns=$(dig +short -x $1)
+
+  echo $1 name ${reverse_dns:----}
+
+  for bl in ${blacklists} ; do
+
+      
+      printf "%-40s" " ${reverse}.${bl}."
+
+      listed="$(dig +short -t a ${reverse}.${bl}.)"
+
+      if [[ $listed ]]; then
+
+        if [[ $listed == *"timed out"* ]]; then
+
+          echo "[timed out]" | cecho YELLOW 
+        else
+        
+          echo "[blacklisted] (${listed})" | cecho LRED
+        fi
+      else
+
+          echo "[not listed]" | cecho LGREEN
+      fi
+  done
+}
+
+#### error ####
+error() {
+
+  echo $0 error: $1 >&2
+  exit 2
+}
+
+#### cecho ####
+cecho(){
+  LGREEN="\033[1;32m"
+  LRED="\033[1;31m"
+  YELLOW="\033[1;33m"
+  NORMAL="\033[m"
+ 
+  color=\$${1:-NORMAL}
+ 
+  echo -ne "$(eval echo ${color})"
+  cat
+ 
+  echo -ne "${NORMAL}"
+}
+
+#### blacklists - grabbed from https://hetrixtools.com/blacklist-check ####
+blacklists="
+all.spamrats.com
+b.barracudacentral.org
+bb.barracudacentral.org
+block.dnsbl.sorbs.net
+cbl.abuseat.org
+dnsbl-3.uceprotect.net
+dnsbl.sorbs.net
+dnsbl.spfbl.net
+dnsbl.zapbl.net
+dnsrbl.org
+dul.dnsbl.sorbs.net
+dyna.spamrats.com
+misc.dnsbl.sorbs.net
+new.spam.dnsbl.sorbs.net
+noptr.spamrats.com
+pbl.spamhaus.org
+phishing.rbl.msrbl.net
+problems.dnsbl.sorbs.net
+proxies.dnsbl.sorbs.net
+recent.spam.dnsbl.sorbs.net
+relays.dnsbl.sorbs.net
+rep.mailspike.net
+safe.dnsbl.sorbs.net
+sbl.spamhaus.org
+smtp.dnsbl.sorbs.net
+socks.dnsbl.sorbs.net
+spam.dnsbl.anonmails.de
+spam.dnsbl.sorbs.net
+spam.rbl.blockedservers.com
+spam.spamrats.com
+stabl.rbl.webiron.net
+talosintelligence.com
+web.dnsbl.sorbs.net
+web.rbl.msrbl.net
+xbl.spamhaus.org
+zen.spamhaus.org
+zombie.dnsbl.sorbs.net
+"
+
+### initiate script ###
+main $1
